@@ -33,7 +33,9 @@ public:
 
 	bool GetWasVisited() const;
 
-	void MarkAsVisited();
+	Node* GetPreviousVisitedNode() const;
+
+	void MarkAsVisited(Node* nodeVisitedFrom);
 
 	void ClearVisitedState();
 
@@ -46,6 +48,7 @@ private:
 	float y_ = 0;
 	const float radius_ = 12.f;
 	bool wasVisited_ = false;
+	Node* backwardsWayPtr = nullptr;
 	sf::CircleShape shape_;
 	sf::CircleShape shape_result;//
 	sf::Color defaultColor_ = sf::Color::Red;

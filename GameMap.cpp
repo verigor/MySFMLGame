@@ -57,9 +57,18 @@ void GameMap::SetChipPosition(int chipNumber, int nodeNumber)
 	SetChipPosition(&chips[chipNumber], &nodes[nodeNumber]);
 }
 
-void GameMap::SetChipPosition(Chip* chip, Node* node)
+void GameMap::SetChipPosition(Chip* chip, Node* node, bool MoveNodeSmoothly)
 {
 	chip->MoveToNode(node);
+	if (MoveNodeSmoothly) {
+		movingChip = chip;
+		chipMovingWay.clear();
+		chipMovingWay = GetChipWay(node);
+	}
+	else {
+		chip->SetCoordinates(node->GetX(), node->GetY());
+	}
+
 	if (chip->IsInWinPosition()) 
 	{
 		if (CheckGameWin()) 
@@ -67,6 +76,24 @@ void GameMap::SetChipPosition(Chip* chip, Node* node)
 			OutputMessageWin();
 		}
 	}
+}
+
+std::vector<Node*> GameMap::GetChipWay(Node* destinationNode) const
+{
+	std::vector<Node*> resultWay;
+	Node* currentNode = destinationNode;
+	while (currentNode != nullptr)
+	{
+		if (currentNode->GetPreviousVisitedNode() == nullptr) {
+			break;
+		}
+
+		resultWay.push_back(currentNode);
+		currentNode = currentNode->GetPreviousVisitedNode();
+	}
+
+	std::reverse(resultWay.begin(), resultWay.end());
+	return resultWay;
 }
 
 void GameMap::SetChipWinPosition(int chipNumber, int nodeNumber)
@@ -108,6 +135,8 @@ void GameMap::DrawGameMap(sf::RenderWindow& window)
 	{
 		currentChip.Draw(window);
 	}
+
+	UpdateChipPosition();
 }
 
 void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& window)
@@ -119,6 +148,10 @@ void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& windo
 
 	if (event.key.code != Mouse::Left)
 	{
+		return;
+	}
+
+	if (IsChipMoving()) {
 		return;
 	}
 
@@ -153,7 +186,7 @@ void GameMap::SelectChipDestination(const sf::RenderWindow& window)
 	{
 		if (currentNode->IsClicked(window)) 
 		{
-			SetChipPosition(selectedChip_, currentNode);
+			SetChipPosition(selectedChip_, currentNode, true);
 			return;
 		}
 	}
@@ -164,12 +197,12 @@ void GameMap::UpdateAvailablePaths(Chip* chip)
 	Node* chipsNode = chip->GetChipsNode();
 	availableNodesToMoveChip_.clear();
 	MarkAllNodesAsUnvisited();
-	FindNearestAvailableNodes(chipsNode);
+	FindNearestAvailableNodes(chipsNode, nullptr);
 }
 
-void GameMap::FindNearestAvailableNodes(Node* node)
+void GameMap::FindNearestAvailableNodes(Node* node, Node* previousNode)
 {
-	node->MarkAsVisited();
+	node->MarkAsVisited(previousNode);
 	const int nodeNumber = node->GetNum();
 	for (int nodeToCheck = 0; nodeToCheck < nodesNum_; nodeToCheck++) 
 	{
@@ -183,7 +216,7 @@ void GameMap::FindNearestAvailableNodes(Node* node)
 			if (!HasChip(nodeToCheck)) 
 			{
 				availableNodesToMoveChip_.push_back(&nodes[nodeToCheck]);
-				FindNearestAvailableNodes(&nodes[nodeToCheck]);
+				FindNearestAvailableNodes(&nodes[nodeToCheck], node);
 			}
 		}
 	}
@@ -243,6 +276,41 @@ const sf::Color& GameMap::GetAvailableChipColor(int chipNum) const
 	const int resultColorNum = chipNum % 6;
 
 	return availableColors[resultColorNum];
+}
+
+bool GameMap::IsChipMoving() const
+{
+	return !chipMovingWay.empty();
+}
+
+void GameMap::UpdateChipPosition()
+{
+	if (!IsChipMoving()) {
+		return;
+	}
+
+	if (movingChip == nullptr) {
+		return;
+	}
+
+	Node* destinationNode = chipMovingWay[0];
+
+	const float currentChipX = movingChip->shape.getPosition().x;
+	float xMovingDirection = destinationNode->GetX() > currentChipX ? 1.f : -1.f;
+	float newChipX = currentChipX + movingSpeed * xMovingDirection;
+
+	const float currentChipY = movingChip->shape.getPosition().y;
+	float yMovingDirection = destinationNode->GetY() > currentChipY ? 1.f : -1.f;
+	float newChipY = currentChipY + movingSpeed * yMovingDirection;
+
+	movingChip->SetCoordinates(newChipX, newChipY);
+
+	const float distanceError = 1.f;
+	if (std::fabsf(destinationNode->GetX() - newChipX) < distanceError &&
+		std::fabsf(destinationNode->GetY() - newChipY) < distanceError)
+	{
+		chipMovingWay.erase(chipMovingWay.begin());
+	}
 }
 
 GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)

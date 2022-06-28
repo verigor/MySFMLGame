@@ -11,6 +11,8 @@ public:
 
 	void MoveToNode(Node* nodePtr);
 
+	void SetCoordinates(float newX, float newY);
+
 	virtual void Draw(sf::RenderWindow& window) const override;
 
 	void SetChipColor(sf::Color color);

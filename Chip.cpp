@@ -16,8 +16,11 @@ void Chip::MoveToNode(Node* nodePtr)
 	}
 	chipsNode_ = nodePtr;
 	nodePtr->chipPtr = this;
-	shape.setPosition(nodePtr->GetX(), nodePtr->GetY());
+}
 
+void Chip::SetCoordinates(float newX, float newY)
+{
+	shape.setPosition(newX, newY);
 }
 
 void Chip::Draw(sf::RenderWindow& window) const

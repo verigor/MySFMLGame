@@ -77,12 +77,19 @@ bool Node::GetWasVisited() const
 	return wasVisited_;
 }
 
-void Node::MarkAsVisited()
+Node* Node::GetPreviousVisitedNode() const
+{
+	return backwardsWayPtr;
+}
+
+void Node::MarkAsVisited(Node* nodeVisitedFrom)
 {
 	wasVisited_ = true;
+	backwardsWayPtr = nodeVisitedFrom;
 }
 
 void Node::ClearVisitedState()
 {
 	wasVisited_ = false;
+	backwardsWayPtr = nullptr;
 }
