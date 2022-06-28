@@ -9,15 +9,13 @@ class Chip : public ClickableObject
 public:
 	Chip();
 
-	sf::CircleShape shape;
-
 	void MoveToNode(Node* nodePtr);
 
 	virtual void Draw(sf::RenderWindow& window) const override;
 
 	void SetChipColor(sf::Color color);
 
-	void SetChipWinPosition(Node* newWinNode);
+	void SetChipWinPosition(Node* chipsWinNode);
 
 	bool IsInWinPosition()const;
 
@@ -27,14 +25,16 @@ public:
 
 	Node* GetChipsNode() const;
 
+public:
+	sf::CircleShape shape;
+	sf::CircleShape shape_result;//
+
 private:
-	float radius_ = 20.f;
-	sf::Color defaultColor = sf::Color::Green;
-	sf::Color selectedColor = sf::Color::Black;
-
-	Node* chipsNode = nullptr;
-
-	Node* chipsWinNode = nullptr;
+	const float radius_ = 20.f;
+	sf::Color defaultColor_ = sf::Color::Green;
+	sf::Color selectedColor_ = sf::Color::Color(180,180,180);
+	Node* chipsNode_ = nullptr;
+	Node* chipsWinNode_ = nullptr;
 	
 };
 

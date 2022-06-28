@@ -9,45 +9,47 @@ using namespace sf;
 class Node : public ClickableObject
 {
 public:
-	Node(int newNodeNum);
+	Node(int NodeNum);
 
-	void SetAsAvailableForChipMoving( bool newAvailable);
+	void SetAsAvailableForChipMoving(bool newAvailable);
 
-	void SetCoordinates(int x, int y);
+	void SetCoordinates(float x, float y);
 
 	virtual bool IsClicked(const sf::RenderWindow& window) const override;
 
 	virtual void Draw(sf::RenderWindow& window)const override;
 
-	float GetRadius();
-
 	bool HasChip() const;
+
+	float GetRadius();
 
 	const sf::CircleShape& GetShape();
 
-	int GetX() const;
+	float GetX() const;
 
-	int GetY() const;
+	float GetY() const;
 
 	int GetNum() const;
 
-	bool WasVisited() const;
-	void MarkAsVisited();
-	void ClearVisitedState();
-public:
+	bool GetWasVisited() const;
 
+	void MarkAsVisited();
+
+	void ClearVisitedState();
+
+public:
 	Chip* chipPtr = nullptr;
 
 private:
-	int x_;
-	int y_;
-	float radius_ = 15.f;
-	sf::CircleShape shape;
-	sf::Color defaultColor= sf::Color::Red;
-	sf::Color availableColor = sf::Color::White;
+	const int nodeNum_ = -1;
+	float x_ = 0;
+	float y_ = 0;
+	const float radius_ = 12.f;
+	bool wasVisited_ = false;
+	sf::CircleShape shape_;
+	sf::CircleShape shape_result;//
+	sf::Color defaultColor_ = sf::Color::Red;
+	sf::Color availableColor_ = sf::Color::White;
 
-	const int nodeNum = -1;
-
-	bool wasVisited = false;
 };
 

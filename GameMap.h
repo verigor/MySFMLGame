@@ -5,21 +5,18 @@
 
 class GameMap;
 
-class GameMapFileReader {
-
-
+class GameMapFileReader
+{
 public:
-
 	GameMap ReadGameMapFromFile(const std::string& fileName);
 
 };
 
-class GameMap {
 
-
+class GameMap 
+{
 public:
-
-	GameMap(int numberOfChips, int numberOfNodes);
+	GameMap(int chipsNum, int nodesNum);
 
 	void AddConnection(int firstNode, int secondNode);
 
@@ -39,8 +36,13 @@ public:
 
 	void ProcessEvent(const sf::Event& event, const sf::RenderWindow& window);
 
-private:
+	bool CheckGameWin() const;//public
 
+public:
+	std::vector<Node> nodes;
+	std::vector<Chip> chips;
+
+private:
 	void SelectChip(const sf::RenderWindow& window);
 
 	void SelectChipDestination(const sf::RenderWindow& window);
@@ -55,28 +57,15 @@ private:
 
 	void ClearChipSelection();
 
-	bool CheckGameWin() const;
-
-	void OnGameWin();
+	void OutputMessageWin();
 
 	const sf::Color& GetAvailableChipColor(int chipNum) const;
 
-public:
-
-	std::vector<Node> nodes;
-
-	std::vector<Chip> chips;
-
 private:
-
-	int nodesNum = 0;
-
-	int chipsNum = 0;
-
-	std::vector<std::vector<bool>> nodeConnectionsGraph;
-
-	Chip* selectedChip = nullptr;
-
-	std::vector<Node*> availableNodesToMoveChip;
+	int nodesNum_ = 0;
+	int chipsNum_ = 0;
+	std::vector<std::vector<bool>> nodeConnectionsGraph_;
+	Chip* selectedChip_ = nullptr;
+	std::vector<Node*> availableNodesToMoveChip_;
 };
 

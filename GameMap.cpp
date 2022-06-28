@@ -3,39 +3,48 @@
 #include "Connection.h"
 #include "Chip.h"
 
-GameMap::GameMap(int numberOfChips, int numberOfNodes)
+GameMap::GameMap(int chipsNum, int nodesNum)
 {
-	nodesNum = numberOfNodes;
-	chipsNum = numberOfChips;
+	chipsNum_ = chipsNum;
+	nodesNum_ = nodesNum;
 
-	for (int i = 0; i < numberOfNodes; i++) {
+	//инициализировали граф соединений нулями
+	for (int i = 0; i < nodesNum; i++)
+	{
 		std::vector<bool> connectionRow;
-		for (int q = 0; q < numberOfNodes; q++) {
+		for (int q = 0; q < nodesNum; q++)
+		{
 			connectionRow.push_back(0);
 		}
-		nodeConnectionsGraph.push_back(connectionRow);
+		nodeConnectionsGraph_.push_back(connectionRow);
 	}
 
-	for (int i = 0; i < numberOfNodes; i++) {
+	//создали массив узловых точек
+	for (int i = 0; i < nodesNum; i++)
+	{
 		nodes.push_back(Node(i));
 	}
 
-	for (int i = 0; i < numberOfChips; i++) {
+	//создали массив фишек
+	for (int i = 0; i < chipsNum; i++) 
+	{
 		Chip newChip;
+		//каждой фишке свой цвет
 		newChip.SetChipColor(GetAvailableChipColor(i));
 		chips.push_back(newChip);
 	}
 }
 
+// заполнили граф соединений
 void GameMap::AddConnection(int firstNode, int secondNode)
 {
-	nodeConnectionsGraph[firstNode][secondNode] = 1;
-	nodeConnectionsGraph[secondNode][firstNode] = 1;
+	nodeConnectionsGraph_[firstNode][secondNode] = 1;
+	nodeConnectionsGraph_[secondNode][firstNode] = 1;
 }
 
 bool GameMap::HasConnection(int firstNode, int secondNode) const
 {
-	return nodeConnectionsGraph[firstNode][secondNode] == 1;
+	return nodeConnectionsGraph_[firstNode][secondNode] == 1;
 }
 
 bool GameMap::HasChip(int nodeNumber) const
@@ -51,9 +60,11 @@ void GameMap::SetChipPosition(int chipNumber, int nodeNumber)
 void GameMap::SetChipPosition(Chip* chip, Node* node)
 {
 	chip->MoveToNode(node);
-	if (chip->IsInWinPosition()) {
-		if (CheckGameWin()) {
-			OnGameWin();
+	if (chip->IsInWinPosition()) 
+	{
+		if (CheckGameWin()) 
+		{
+			OutputMessageWin();
 		}
 	}
 }
@@ -70,43 +81,49 @@ void GameMap::SetChipWinPosition(Chip* chip, Node* node)
 
 void GameMap::DrawGameMap(sf::RenderWindow& window)
 {
-	for (int i = 0; i < nodesNum; i++) {
+	for (int i = 0; i < nodesNum_; i++)
+	{
 		nodes[i].Draw(window);
 		nodes[i].SetAsAvailableForChipMoving(false);
 	}
 
-	for (Node* currentNodePtr : availableNodesToMoveChip) {
+	for (Node* currentNodePtr : availableNodesToMoveChip_) 
+	{
 		currentNodePtr->SetAsAvailableForChipMoving(true);
 	}
 
-	for (int i = 0; i < nodesNum; i++) {
-		for (int q = 0; q < i; q++) {
-
-			if (HasConnection(i, q)) {
-
+	for (int i = 0; i < nodesNum_; i++)
+	{
+		for (int q = 0; q < i; q++)
+		{
+			if (HasConnection(i, q))
+			{
 				Connection connection(nodes[i], nodes[q]);
 				connection.Draw(window);
 			}
-
 		}
 	}
 
-	for (Chip& currentChip : chips) {
+	for (Chip& currentChip : chips)
+	{
 		currentChip.Draw(window);
 	}
 }
 
 void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& window)
 {
-	if (event.type != Event::MouseButtonPressed) {
+	if (event.type != Event::MouseButtonPressed)
+	{
 		return;
 	}
 
-	if (event.key.code != Mouse::Left) {
+	if (event.key.code != Mouse::Left)
+	{
 		return;
 	}
 
-	if (!IsSomeChipSelected()) {
+	if (!IsSomeChipSelected())
+	{
 		SelectChip(window);
 		return;
 	}
@@ -118,34 +135,34 @@ void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& windo
 
 void GameMap::SelectChip(const sf::RenderWindow& window)
 {
-	for (Chip& currentChip : chips) {
-
-		if (currentChip.IsClicked(window)) {
-			selectedChip = &currentChip;
-			selectedChip->SetAsSelected(true);
+	for (Chip& currentChip : chips) 
+	{
+		if (currentChip.IsClicked(window)) 
+		{
+			selectedChip_ = &currentChip;
+			selectedChip_->SetAsSelected(true);
 			UpdateAvailablePaths(&currentChip);
 			return;
 		}
-
 	}
 }
 
 void GameMap::SelectChipDestination(const sf::RenderWindow& window)
 {
-	for (Node* currentNode : availableNodesToMoveChip) {
-
-		if (currentNode->IsClicked(window)) {
-			SetChipPosition(selectedChip, currentNode);
+	for (Node* currentNode : availableNodesToMoveChip_) 
+	{
+		if (currentNode->IsClicked(window)) 
+		{
+			SetChipPosition(selectedChip_, currentNode);
 			return;
 		}
-
 	}
 }
 
 void GameMap::UpdateAvailablePaths(Chip* chip)
 {
 	Node* chipsNode = chip->GetChipsNode();
-	availableNodesToMoveChip.clear();
+	availableNodesToMoveChip_.clear();
 	MarkAllNodesAsUnvisited();
 	FindNearestAvailableNodes(chipsNode);
 }
@@ -154,45 +171,50 @@ void GameMap::FindNearestAvailableNodes(Node* node)
 {
 	node->MarkAsVisited();
 	const int nodeNumber = node->GetNum();
-	for (int nodeToCheck = 0; nodeToCheck < nodesNum; nodeToCheck++) {
-
-		if (nodes[nodeToCheck].WasVisited()) {
+	for (int nodeToCheck = 0; nodeToCheck < nodesNum_; nodeToCheck++) 
+	{
+		if (nodes[nodeToCheck].GetWasVisited()) 
+		{
 			continue;
 		}
 
-		if (HasConnection(nodeNumber, nodeToCheck)) {
-			if (!HasChip(nodeToCheck)) {
-				availableNodesToMoveChip.push_back(&nodes[nodeToCheck]);
+		if (HasConnection(nodeNumber, nodeToCheck)) 
+		{
+			if (!HasChip(nodeToCheck)) 
+			{
+				availableNodesToMoveChip_.push_back(&nodes[nodeToCheck]);
 				FindNearestAvailableNodes(&nodes[nodeToCheck]);
 			}
 		}
-
 	}
 }
 
 void GameMap::MarkAllNodesAsUnvisited()
 {
-	for (Node& currentNode : nodes) {
+	for (Node& currentNode : nodes) 
+	{
 		currentNode.ClearVisitedState();
 	}
 }
 
 bool GameMap::IsSomeChipSelected() const
 {
-	return selectedChip != nullptr;
+	return selectedChip_ != nullptr;
 }
 
 void GameMap::ClearChipSelection()
 {
-	selectedChip->SetAsSelected(false);
-	selectedChip = nullptr;
-	availableNodesToMoveChip.clear();
+	selectedChip_->SetAsSelected(false);
+	selectedChip_ = nullptr;
+	availableNodesToMoveChip_.clear();
 }
 
 bool GameMap::CheckGameWin() const
 {
-	for (const Chip& currentChip : chips) {
-		if (!currentChip.IsInWinPosition()) {
+	for (const Chip& currentChip : chips) 
+	{
+		if (!currentChip.IsInWinPosition()) 
+		{
 			return false;
 		}
 	}
@@ -200,16 +222,26 @@ bool GameMap::CheckGameWin() const
 	return true;
 }
 
-void GameMap::OnGameWin()
+void GameMap::OutputMessageWin()
 {
-	int a = 10;
-	a--;
+	
+	
+
+	
+		
 }
+
 
 const sf::Color& GameMap::GetAvailableChipColor(int chipNum) const
 {
-	sf::Color availableColors[6] = { sf::Color::White, sf::Color::Green, sf::Color::Blue, sf::Color::Cyan, sf::Color::Magenta, sf::Color::Yellow };
+	sf::Color availableColors[6] = { sf::Color::Color(138, 43, 226), 
+									 sf::Color::Green, 
+									 sf::Color::Blue, 
+									 sf::Color::Cyan, 
+		                             sf::Color::Magenta, 
+		                             sf::Color::Yellow };
 	const int resultColorNum = chipNum % 6;
+
 	return availableColors[resultColorNum];
 }
 
@@ -217,41 +249,51 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 {
 	std::fstream inputFile(fileName);
 	
-	int chipsNum;
-	int nodesNum;
+	int chipsNum=0;
+	int nodesNum=0;
 
+	//считываем из файла количество фишек
 	inputFile >> chipsNum;
+	// cчитываем из файла количество узловых точек, куда можно поместить фишку
 	inputFile >> nodesNum;
 
 	GameMap resultGameMap(chipsNum, nodesNum);
 
-	for (int i = 0; i < nodesNum; i++) {
-		int nodeXPos;
-		int nodeYPos;
+	//cчитываем из файла координаты для узловых точек
+	for (int i = 0; i < nodesNum; i++) 
+	{
+		float nodeXPos;
+		float nodeYPos;
 		inputFile >> nodeXPos;
 		inputFile >> nodeYPos;
-
 		resultGameMap.nodes[i].SetCoordinates(nodeXPos, nodeYPos);
 	}
 
-	for (int i = 0; i < chipsNum; i++) {
+	//cчитываем из файла начальное расположение фишек по точкам 
+	for (int i = 0; i < chipsNum; i++) 
+	{
 		int chipStartPosition;
 		inputFile >> chipStartPosition;
 		chipStartPosition--;
 		resultGameMap.SetChipPosition(i, chipStartPosition);
 	}
 
-	for (int i = 0; i < chipsNum; i++) {
+	//cчитываем из файла выигрышное положение фишек по точкам
+	for (int i = 0; i < chipsNum; i++) 
+	{
 		int chipEndPosition;
 		inputFile >> chipEndPosition;
 		chipEndPosition--;
 		resultGameMap.SetChipWinPosition(i, chipEndPosition);
 	}
 
+	//cчитываем из файла количество соединений
 	int numConnections;
 	inputFile >> numConnections;
 
-	for (int i = 0; i < numConnections; i++) {
+	//cчитываем из файла список соединений между парами точек
+	for (int i = 0; i < numConnections; i++) 
+	{
 		int firstNode;
 		int secondNode;
 		inputFile >> firstNode;
@@ -260,5 +302,7 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 		secondNode--;
 		resultGameMap.AddConnection(firstNode, secondNode);
 	}
+
 	return resultGameMap;
 }
+

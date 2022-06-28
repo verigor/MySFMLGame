@@ -1,41 +1,45 @@
 #include "Node.h"
 
 
-Node::Node(int newNodeNum) : nodeNum(newNodeNum)
+Node::Node(int NodeNum) : nodeNum_(NodeNum)
 {
 }
 
 void Node::Draw(sf::RenderWindow& window) const 
 {
-	window.draw(shape);
+	window.draw(shape_);
+	window.draw(shape_result);//
 }
 
 void Node::SetAsAvailableForChipMoving(bool newAvailable)
 {
 	if (newAvailable) {
-		shape.setFillColor(availableColor);
+		shape_.setFillColor(availableColor_);
 	}
 	else
 	{
-		shape.setFillColor(defaultColor);
+		shape_.setFillColor(defaultColor_);
 	}
-	
 }
 
-void Node::SetCoordinates(int x, int y)
+void Node::SetCoordinates(float x, float y)
 {
 	x_ = x;
 	y_ = y;
-	shape.setRadius(radius_);
-	shape.setPosition(x_, y_);
-	//shape.setFillColor(sf::Color::Red);
-	shape.setFillColor(defaultColor);
+	shape_.setRadius(radius_);
+	shape_.setOrigin(radius_, radius_);
+	shape_.setPosition(x_, y_);
+	shape_.setFillColor(defaultColor_);
+
+	shape_result.setRadius(radius_);//
+	shape_result.setPosition(x_ + 500,y_+300);//
+	shape_result.setFillColor(defaultColor_);//
 }
 
 bool Node::IsClicked(const sf::RenderWindow& window) const
 {
-	Vector2i position = Mouse::getPosition(window);
-	return shape.getGlobalBounds().contains(position.x, position.y);
+	sf::Vector2i position = sf::Mouse::getPosition(window);
+	return shape_.getGlobalBounds().contains(position.x, position.y);
 }
 
 float Node::GetRadius()
@@ -50,35 +54,35 @@ bool Node::HasChip() const
 
 const sf::CircleShape& Node::GetShape()
 {
-	return shape;
+	return shape_;
 }
 
-int Node::GetX() const
+float Node::GetX() const
 {
 	return x_;
 }
 
-int Node::GetY() const
+float Node::GetY() const
 {
 	return y_;
 }
 
 int Node::GetNum() const
 {
-	return nodeNum;
+	return nodeNum_;
 }
 
-bool Node::WasVisited() const
+bool Node::GetWasVisited() const
 {
-	return wasVisited;
+	return wasVisited_;
 }
 
 void Node::MarkAsVisited()
 {
-	wasVisited = true;
+	wasVisited_ = true;
 }
 
 void Node::ClearVisitedState()
 {
-	wasVisited = false;
+	wasVisited_ = false;
 }

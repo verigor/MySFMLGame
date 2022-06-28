@@ -143,13 +143,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chip.cpp" />
-    <ClCompile Include="ClickableObject.cpp" />
     <ClCompile Include="Connection.cpp" />
-    <ClCompile Include="DrawableObject.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chip.h" />
@@ -158,8 +155,6 @@
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="Node.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

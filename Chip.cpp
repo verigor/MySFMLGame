@@ -4,38 +4,45 @@
 Chip::Chip()
 {
 	shape.setRadius(radius_);
+	shape.setOrigin(radius_, radius_);
+	shape_result.setRadius(radius_);//
 }
 
 void Chip::MoveToNode(Node* nodePtr)
 {
-	if (chipsNode)
+	if (chipsNode_)
 	{
-		chipsNode->chipPtr = nullptr;
+		chipsNode_->chipPtr = nullptr;
 	}
-	chipsNode = nodePtr;
+	chipsNode_ = nodePtr;
 	nodePtr->chipPtr = this;
 	shape.setPosition(nodePtr->GetX(), nodePtr->GetY());
+
 }
 
 void Chip::Draw(sf::RenderWindow& window) const
 {
 	window.draw(shape);
+	window.draw(shape_result);
 }
 
 void Chip::SetChipColor(sf::Color color)
 {
-	defaultColor = color;
+	defaultColor_ = color;
 	shape.setFillColor(color);
 }
 
-void Chip::SetChipWinPosition(Node* newWinNode)
+void Chip::SetChipWinPosition(Node* chipsWinNode)
 {
-	chipsWinNode = newWinNode;
+	chipsWinNode_ = chipsWinNode;
+
+	shape_result.setPosition(chipsWinNode->GetX()+500, chipsWinNode->GetY()+300);//
+	shape_result.setFillColor(defaultColor_);//
 }
 
 bool Chip::IsInWinPosition() const
 {
-	return chipsNode == chipsWinNode;
+	return chipsNode_ == chipsWinNode_;
 }
 
 bool Chip::IsClicked(const sf::RenderWindow& window) const
@@ -48,16 +55,19 @@ void Chip::SetAsSelected(bool IsSelected)
 {
 	if (IsSelected)
 	{
-		shape.setFillColor(selectedColor);
+		//shape.setFillColor(selectedColor);
+		shape.setOutlineThickness(10.0f);//
+		shape.setOutlineColor(selectedColor_);//
 	}
 	else
 	{
-		shape.setFillColor(defaultColor);
+		shape.setFillColor(defaultColor_);
+		shape.setOutlineThickness(0.0f);//
 	}
 }
 
 Node* Chip::GetChipsNode() const
 {
-	return chipsNode;
+	return chipsNode_;
 }
 
