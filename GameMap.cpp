@@ -8,7 +8,6 @@ GameMap::GameMap(int chipsNum, int nodesNum)
 	chipsNum_ = chipsNum;
 	nodesNum_ = nodesNum;
 
-	//инициализировали граф соединений нулями
 	for (int i = 0; i < nodesNum; i++)
 	{
 		std::vector<bool> connectionRow;
@@ -19,35 +18,31 @@ GameMap::GameMap(int chipsNum, int nodesNum)
 		nodeConnectionsGraph_.push_back(connectionRow);
 	}
 
-	//создали массив узловых точек
 	for (int i = 0; i < nodesNum; i++)
 	{
 		nodes.push_back(Node(i));
 	}
 
-	//создали массив фишек
 	for (int i = 0; i < chipsNum; i++) 
 	{
 		Chip newChip;
-		//каждой фишке свой цвет
 		newChip.SetChipColor(GetAvailableChipColor(i));
 		chips.push_back(newChip);
 	}
 }
 
-// заполнили граф соединений
 void GameMap::AddConnection(int firstNode, int secondNode)
 {
 	nodeConnectionsGraph_[firstNode][secondNode] = 1;
 	nodeConnectionsGraph_[secondNode][firstNode] = 1;
 }
 
-bool GameMap::HasConnection(int firstNode, int secondNode) const
+bool GameMap::HasConnection(int firstNode, int secondNode) 
 {
 	return nodeConnectionsGraph_[firstNode][secondNode] == 1;
 }
 
-bool GameMap::HasChip(int nodeNumber) const
+bool GameMap::HasChip(int nodeNumber) 
 {
 	return nodes[nodeNumber].HasChip();
 }
@@ -60,12 +55,14 @@ void GameMap::SetChipPosition(int chipNumber, int nodeNumber)
 void GameMap::SetChipPosition(Chip* chip, Node* node, bool MoveNodeSmoothly)
 {
 	chip->MoveToNode(node);
-	if (MoveNodeSmoothly) {
-		movingChip = chip;
-		chipMovingWay.clear();
-		chipMovingWay = GetChipWay(node);
+	if (MoveNodeSmoothly)
+	{
+		movingChip_ = chip;
+		chipMovingWay_.clear();
+		chipMovingWay_ = GetChipWay(node);
 	}
-	else {
+	else
+	{
 		chip->SetCoordinates(node->GetX(), node->GetY());
 	}
 
@@ -78,13 +75,14 @@ void GameMap::SetChipPosition(Chip* chip, Node* node, bool MoveNodeSmoothly)
 	}
 }
 
-std::vector<Node*> GameMap::GetChipWay(Node* destinationNode) const
+std::vector<Node*> GameMap::GetChipWay(Node* destinationNode) 
 {
 	std::vector<Node*> resultWay;
 	Node* currentNode = destinationNode;
 	while (currentNode != nullptr)
 	{
-		if (currentNode->GetPreviousVisitedNode() == nullptr) {
+		if (currentNode->GetPreviousVisitedNode() == nullptr) 
+		{
 			break;
 		}
 
@@ -151,7 +149,8 @@ void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& windo
 		return;
 	}
 
-	if (IsChipMoving()) {
+	if (IsChipMoving()) 
+	{
 		return;
 	}
 
@@ -163,7 +162,6 @@ void GameMap::ProcessEvent(const sf::Event& event, const sf::RenderWindow& windo
 
 	SelectChipDestination(window);
 	ClearChipSelection();
-
 }
 
 void GameMap::SelectChip(const sf::RenderWindow& window)
@@ -230,7 +228,7 @@ void GameMap::MarkAllNodesAsUnvisited()
 	}
 }
 
-bool GameMap::IsSomeChipSelected() const
+bool GameMap::IsSomeChipSelected() 
 {
 	return selectedChip_ != nullptr;
 }
@@ -242,9 +240,9 @@ void GameMap::ClearChipSelection()
 	availableNodesToMoveChip_.clear();
 }
 
-bool GameMap::CheckGameWin() const
+bool GameMap::CheckGameWin()
 {
-	for (const Chip& currentChip : chips) 
+	for ( Chip& currentChip : chips) 
 	{
 		if (!currentChip.IsInWinPosition()) 
 		{
@@ -257,15 +255,10 @@ bool GameMap::CheckGameWin() const
 
 void GameMap::OutputMessageWin()
 {
-	
-	
-
-	
-		
 }
 
 
-const sf::Color& GameMap::GetAvailableChipColor(int chipNum) const
+const sf::Color& GameMap::GetAvailableChipColor(int chipNum) 
 {
 	sf::Color availableColors[6] = { sf::Color::Color(138, 43, 226), 
 									 sf::Color::Green, 
@@ -273,43 +266,45 @@ const sf::Color& GameMap::GetAvailableChipColor(int chipNum) const
 									 sf::Color::Cyan, 
 		                             sf::Color::Magenta, 
 		                             sf::Color::Yellow };
-	const int resultColorNum = chipNum % 6;
+	int resultColorNum = chipNum % 6;
 
 	return availableColors[resultColorNum];
 }
 
-bool GameMap::IsChipMoving() const
+bool GameMap::IsChipMoving() 
 {
-	return !chipMovingWay.empty();
+	return !chipMovingWay_.empty();
 }
 
 void GameMap::UpdateChipPosition()
 {
-	if (!IsChipMoving()) {
+	if (!IsChipMoving()) 
+	{
 		return;
 	}
 
-	if (movingChip == nullptr) {
+	if (movingChip_ == nullptr) 
+	{
 		return;
 	}
 
-	Node* destinationNode = chipMovingWay[0];
+	Node* destinationNode = chipMovingWay_[0];
 
-	const float currentChipX = movingChip->shape.getPosition().x;
+	const float currentChipX = movingChip_->shape.getPosition().x;
 	float xMovingDirection = destinationNode->GetX() > currentChipX ? 1.f : -1.f;
-	float newChipX = currentChipX + movingSpeed * xMovingDirection;
+	float newChipX = currentChipX + movingSpeed_ * xMovingDirection;
 
-	const float currentChipY = movingChip->shape.getPosition().y;
+	const float currentChipY = movingChip_->shape.getPosition().y;
 	float yMovingDirection = destinationNode->GetY() > currentChipY ? 1.f : -1.f;
-	float newChipY = currentChipY + movingSpeed * yMovingDirection;
+	float newChipY = currentChipY + movingSpeed_ * yMovingDirection;
 
-	movingChip->SetCoordinates(newChipX, newChipY);
+	movingChip_->SetCoordinates(newChipX, newChipY);
 
 	const float distanceError = 1.f;
 	if (std::fabsf(destinationNode->GetX() - newChipX) < distanceError &&
 		std::fabsf(destinationNode->GetY() - newChipY) < distanceError)
 	{
-		chipMovingWay.erase(chipMovingWay.begin());
+		chipMovingWay_.erase(chipMovingWay_.begin());
 	}
 }
 
@@ -320,14 +315,11 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 	int chipsNum=0;
 	int nodesNum=0;
 
-	//считываем из файла количество фишек
 	inputFile >> chipsNum;
-	// cчитываем из файла количество узловых точек, куда можно поместить фишку
 	inputFile >> nodesNum;
 
 	GameMap resultGameMap(chipsNum, nodesNum);
 
-	//cчитываем из файла координаты для узловых точек
 	for (int i = 0; i < nodesNum; i++) 
 	{
 		float nodeXPos;
@@ -337,7 +329,6 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 		resultGameMap.nodes[i].SetCoordinates(nodeXPos, nodeYPos);
 	}
 
-	//cчитываем из файла начальное расположение фишек по точкам 
 	for (int i = 0; i < chipsNum; i++) 
 	{
 		int chipStartPosition;
@@ -346,7 +337,6 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 		resultGameMap.SetChipPosition(i, chipStartPosition);
 	}
 
-	//cчитываем из файла выигрышное положение фишек по точкам
 	for (int i = 0; i < chipsNum; i++) 
 	{
 		int chipEndPosition;
@@ -355,11 +345,9 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 		resultGameMap.SetChipWinPosition(i, chipEndPosition);
 	}
 
-	//cчитываем из файла количество соединений
 	int numConnections;
 	inputFile >> numConnections;
 
-	//cчитываем из файла список соединений между парами точек
 	for (int i = 0; i < numConnections; i++) 
 	{
 		int firstNode;
@@ -373,4 +361,3 @@ GameMap GameMapFileReader::ReadGameMapFromFile(const std::string& fileName)
 
 	return resultGameMap;
 }
-

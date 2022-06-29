@@ -8,7 +8,7 @@ Node::Node(int NodeNum) : nodeNum_(NodeNum)
 void Node::Draw(sf::RenderWindow& window) const 
 {
 	window.draw(shape_);
-	window.draw(shape_result);//
+	window.draw(shape_result);
 }
 
 void Node::SetAsAvailableForChipMoving(bool newAvailable)
@@ -31,9 +31,10 @@ void Node::SetCoordinates(float x, float y)
 	shape_.setPosition(x_, y_);
 	shape_.setFillColor(defaultColor_);
 
-	shape_result.setRadius(radius_);//
-	shape_result.setPosition(x_ + 500,y_+300);//
-	shape_result.setFillColor(defaultColor_);//
+	shape_result.setRadius(radius_);
+	shape_result.setOrigin(radius_, radius_);
+	shape_result.setPosition(x_ + 500,y_+300);
+	shape_result.setFillColor(defaultColor_);
 }
 
 bool Node::IsClicked(const sf::RenderWindow& window) const
@@ -42,12 +43,12 @@ bool Node::IsClicked(const sf::RenderWindow& window) const
 	return shape_.getGlobalBounds().contains(position.x, position.y);
 }
 
-float Node::GetRadius()
-{
-	return radius_;
-}
+//float Node::GetRadius()
+//{
+//	return radius_;
+//}
 
-bool Node::HasChip() const
+bool Node::HasChip()
 {
 	return chipPtr != nullptr;
 }
@@ -79,17 +80,17 @@ bool Node::GetWasVisited() const
 
 Node* Node::GetPreviousVisitedNode() const
 {
-	return backwardsWayPtr;
+	return previousVisitedNode_;
 }
 
 void Node::MarkAsVisited(Node* nodeVisitedFrom)
 {
 	wasVisited_ = true;
-	backwardsWayPtr = nodeVisitedFrom;
+	previousVisitedNode_ = nodeVisitedFrom;
 }
 
 void Node::ClearVisitedState()
 {
 	wasVisited_ = false;
-	backwardsWayPtr = nullptr;
+	previousVisitedNode_ = nullptr;
 }

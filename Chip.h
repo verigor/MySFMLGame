@@ -4,6 +4,7 @@
 
 class Node;
 
+
 class Chip : public ClickableObject
 {
 public:
@@ -19,7 +20,7 @@ public:
 
 	void SetChipWinPosition(Node* chipsWinNode);
 
-	bool IsInWinPosition()const;
+	bool IsInWinPosition();
 
 	virtual bool IsClicked(const sf::RenderWindow& window) const override;
 
@@ -29,7 +30,7 @@ public:
 
 public:
 	sf::CircleShape shape;
-	sf::CircleShape shape_result;//
+	sf::CircleShape shape_result;
 
 private:
 	const float radius_ = 20.f;

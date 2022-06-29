@@ -1,11 +1,14 @@
 #include "Chip.h"
 #include "Node.h"
 
+
 Chip::Chip()
 {
 	shape.setRadius(radius_);
 	shape.setOrigin(radius_, radius_);
-	shape_result.setRadius(radius_);//
+
+	shape_result.setOrigin(radius_, radius_);
+	shape_result.setRadius(radius_);
 }
 
 void Chip::MoveToNode(Node* nodePtr)
@@ -39,11 +42,11 @@ void Chip::SetChipWinPosition(Node* chipsWinNode)
 {
 	chipsWinNode_ = chipsWinNode;
 
-	shape_result.setPosition(chipsWinNode->GetX()+500, chipsWinNode->GetY()+300);//
-	shape_result.setFillColor(defaultColor_);//
+	shape_result.setPosition(chipsWinNode->GetX() + 500, chipsWinNode->GetY() + 300);
+	shape_result.setFillColor(defaultColor_);
 }
 
-bool Chip::IsInWinPosition() const
+bool Chip::IsInWinPosition()
 {
 	return chipsNode_ == chipsWinNode_;
 }
@@ -58,14 +61,13 @@ void Chip::SetAsSelected(bool IsSelected)
 {
 	if (IsSelected)
 	{
-		//shape.setFillColor(selectedColor);
-		shape.setOutlineThickness(10.0f);//
-		shape.setOutlineColor(selectedColor_);//
+		shape.setOutlineThickness(10.0f);
+		shape.setOutlineColor(selectedColor_);
 	}
 	else
 	{
 		shape.setFillColor(defaultColor_);
-		shape.setOutlineThickness(0.0f);//
+		shape.setOutlineThickness(0.0f);
 	}
 }
 

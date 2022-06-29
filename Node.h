@@ -19,9 +19,9 @@ public:
 
 	virtual void Draw(sf::RenderWindow& window)const override;
 
-	bool HasChip() const;
+	bool HasChip() ;
 
-	float GetRadius();
+	//float GetRadius();
 
 	const sf::CircleShape& GetShape();
 
@@ -48,9 +48,9 @@ private:
 	float y_ = 0;
 	const float radius_ = 12.f;
 	bool wasVisited_ = false;
-	Node* backwardsWayPtr = nullptr;
+	Node* previousVisitedNode_ = nullptr;
 	sf::CircleShape shape_;
-	sf::CircleShape shape_result;//
+	sf::CircleShape shape_result;
 	sf::Color defaultColor_ = sf::Color::Red;
 	sf::Color availableColor_ = sf::Color::White;
 

@@ -5,6 +5,7 @@
 
 class GameMap;
 
+
 class GameMapFileReader
 {
 public:
@@ -20,15 +21,15 @@ public:
 
 	void AddConnection(int firstNode, int secondNode);
 
-	bool HasConnection(int firstNode, int secondNode) const;
+	bool HasConnection(int firstNode, int secondNode) ;
 
-	bool HasChip(int nodeNumber) const;
+	bool HasChip(int nodeNumber) ;
 
 	void SetChipPosition(int chipNumber, int nodeNumber);
 
 	void SetChipPosition(Chip* chip, Node* node, bool MoveNodeSmoothly = false);
 
-	std::vector<Node*> GetChipWay(Node* destinationNode) const;
+	std::vector<Node*> GetChipWay(Node* destinationNode) ;
 
 	void SetChipWinPosition(int chipNumber, int nodeNumber);
 
@@ -38,7 +39,7 @@ public:
 
 	void ProcessEvent(const sf::Event& event, const sf::RenderWindow& window);
 
-	bool CheckGameWin() const;//public
+	bool CheckGameWin() ;
 
 public:
 	std::vector<Node> nodes;
@@ -55,28 +56,28 @@ private:
 
 	void MarkAllNodesAsUnvisited();
 
-	bool IsSomeChipSelected() const;
+	bool IsSomeChipSelected() ;
 
 	void ClearChipSelection();
 
 	void OutputMessageWin();
 
-	const sf::Color& GetAvailableChipColor(int chipNum) const;
+	const sf::Color& GetAvailableChipColor(int chipNum) ;
 
-	bool IsChipMoving() const;
+	bool IsChipMoving() ;
 
 	void UpdateChipPosition();
 
 private:
-	int nodesNum_ = 0;
-	int chipsNum_ = 0;
+	int nodesNum_;
+	int chipsNum_ ;
 	std::vector<std::vector<bool>> nodeConnectionsGraph_;
 	Chip* selectedChip_ = nullptr;
 	std::vector<Node*> availableNodesToMoveChip_;
 
-	Chip* movingChip = nullptr;
-	std::vector<Node*> chipMovingWay;
+	Chip* movingChip_ = nullptr;
+	std::vector<Node*> chipMovingWay_;
 
-	const int movingSpeed = 1;
+	const int movingSpeed_ = 1;
 };
 
