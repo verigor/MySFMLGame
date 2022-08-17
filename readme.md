@@ -6,4 +6,4 @@
 
 ## Скриншоты из игры
 ![game screenshoot](scrrenshoot1.png "game screenshoot")
-![game screenshoot](scrrenshoo21.png "game screenshoot")
+![game screenshoot](scrrenshoot2.png "game screenshoot")
